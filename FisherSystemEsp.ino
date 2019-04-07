@@ -37,13 +37,13 @@
 */
 //#define DISABLE_PUBLISHING
 
-#define  TEST
+//#define  TEST
 //#define KITCHEN
 //#define GARAGE_UP
 //#define GARAGE_DOOR
 //#define CABIN_BASEMENT_NORTH
 //#define RIVER
-//#define HOTTUB
+#define HOTTUB
 
 const char FirmwareVersion[] = "0.50";
 
