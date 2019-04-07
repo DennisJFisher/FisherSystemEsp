@@ -28,14 +28,10 @@ IPAddress StaticIP  (192, 168, 1, 181);
 IPAddress StaticIP  (192, 168, 1, 183);
 #elif defined GARAGE_UP
 IPAddress StaticIP  (192, 168, 1, 184);
-#elif defined GARAGE_DOWN
-IPAddress StaticIP  (192, 168, 1, 185);
 #elif defined GARAGE_DOOR
 IPAddress StaticIP  (192, 168, 1, 186);
 #elif defined CABIN_BASEMENT_NORTH
 IPAddress StaticIP  (192, 168, 1, 187);
-#elif defined CABIN_BASEMENT_SOUTH
-IPAddress StaticIP  (192, 168, 1, 188);
 #elif defined RIVER
 IPAddress StaticIP  (192, 168, 1, 189);
 #elif defined HOTTUB

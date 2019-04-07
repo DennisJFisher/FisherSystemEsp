@@ -37,12 +37,11 @@
 */
 //#define DISABLE_PUBLISHING
 
-//#define  TEST
+#define  TEST
 //#define KITCHEN
 //#define GARAGE_UP
 //#define GARAGE_DOOR
 //#define CABIN_BASEMENT_NORTH
-//#define CABIN_BASEMENT_SOUTH
 //#define RIVER
 //#define HOTTUB
 
