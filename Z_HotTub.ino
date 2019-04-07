@@ -23,8 +23,8 @@ void Function_Setup()
 void SendFunctionInfo()
 {
     String Msg = "{\"FunctionTable\":\"";
-    Msg += "Hot tub temp (F),"    + String(LastDS1Temp_F)    + "\"}";
-    Msg += "Hot tub temp LL (F)," + String(LimitLowerTemp_F) + "\"}";
+    Msg += "Hot tub temp (F),"    + String(LastDS1Temp_F)    + ",";
+    Msg += "Hot tub temp LL (F)," + String(LimitLowerTemp_F) + ",";
     Msg += "Hot tub temp UL (F)," + String(LimitUpperTemp_F) + "\"}";
     WebSocket.broadcastTXT(Msg);
     Serial.println(Msg);
