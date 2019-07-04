@@ -507,7 +507,6 @@ void Services_Setup()
 {
     Ota_Setup();
     NTP_Setup();
-    // DJF
     if (!MDNS.begin(DeviceConfiguration.ClientName.c_str())) {             // Start the mDNS responder for esp8266.local
        Serial.println("Error setting up MDNS responder!");
     }
@@ -517,6 +516,7 @@ void Services_Setup()
     }
     WebServer_Setup();
     MQTT_Setup();
+    Email_Setup();
 }
 
 void Services_Loop()
@@ -525,6 +525,7 @@ void Services_Loop()
     NTP_Loop();
     WebServer_Loop();
     MQTT_Loop();
+    Email_Loop();
 }
 
 WiFiEventStationModeGotIP myIP;
