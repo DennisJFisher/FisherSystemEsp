@@ -1,5 +1,4 @@
 #include <ESP8266WiFi.h>
-// DJF
 #include <ESP8266mDNS.h>        // Include the mDNS library
 #include "HTML.h"
 
@@ -382,10 +381,16 @@ void WebSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
             hexdump(payload, length);
             break;
         case WStype_FRAGMENT:
-            Serial.printf("[%u] WS get Text: %s\n", num, payload);
+            Serial.printf("[%u] WS get frag: %s\n", num, payload);
             break;
         case WStype_FRAGMENT_FIN:
-            Serial.printf("[%u] WS get Text: %s\n", num, payload);
+            Serial.printf("[%u] WS get frag fin: %s\n", num, payload);
+            break;
+        case WStype_PING:
+            Serial.printf("[%u] WS get ping: %s\n", num, payload);
+            break;
+        case WStype_PONG:
+            Serial.printf("[%u] WS get pong: %s\n", num, payload);
             break;
     }
 }

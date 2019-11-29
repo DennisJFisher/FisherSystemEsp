@@ -45,7 +45,7 @@
 //#define RIVER
 //#define HOTTUB
 
-const char FirmwareVersion[] = "0.50";
+const char FirmwareVersion[] = "0.50A";
 
 // These 3 objects allow the device's process loop to periodically run.
 Ticker TickerProcessLoop;

@@ -15,9 +15,9 @@ inline bool Publish(Topic_t Topic, double Value)
 {
     // Need to publish with a resolution of 0.1
     Value = round(10 * Value) / 10;
-    int Num = (int)Value;
-    int Tenth = (int)((Value - Num)*10);
-    return Publish(Topic, (int)Value);
+//    int Num = (int)Value;
+//    int Tenth = (int)((Value - Num)*10);
+    return Publish(Topic, (String)Value);
 }
 
 const String MqttDomainName = "FisherSystem";
