@@ -521,7 +521,7 @@ void Services_Setup()
     }
     WebServer_Setup();
     MQTT_Setup();
-    Email_Setup();
+//    Email_Setup();
 }
 
 void Services_Loop()
@@ -530,7 +530,7 @@ void Services_Loop()
     NTP_Loop();
     WebServer_Loop();
     MQTT_Loop();
-    Email_Loop();
+//    Email_Loop();
 }
 
 WiFiEventStationModeGotIP myIP;

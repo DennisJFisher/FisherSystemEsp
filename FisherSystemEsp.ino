@@ -37,7 +37,7 @@
 */
 //#define DISABLE_PUBLISHING
 
-#define  TEST
+//#define  TEST
 //#define KITCHEN
 //#define GARAGE_UP
 //#define GARAGE_DOOR

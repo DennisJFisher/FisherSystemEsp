@@ -1,3 +1,4 @@
+#if 0
 #include <ESPMail.h>
 
 ESPMail mail;
@@ -37,3 +38,4 @@ void Email_Loop()
         SendEmail = false;
     }
 }
+#endif
