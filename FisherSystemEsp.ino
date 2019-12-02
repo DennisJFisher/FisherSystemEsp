@@ -40,12 +40,12 @@
 //#define  TEST
 //#define KITCHEN
 //#define GARAGE_UP
-//#define GARAGE_DOOR
+#define GARAGE_DOOR
 //#define CABIN_BASEMENT_NORTH
 //#define RIVER
 //#define HOTTUB
 
-const char FirmwareVersion[] = "0.50A";
+const char FirmwareVersion[] = "0.52";
 
 // These 3 objects allow the device's process loop to periodically run.
 Ticker TickerProcessLoop;
@@ -165,7 +165,7 @@ void loop()
         }
         Function_ProcessLoop();
 
-        Serial.printf("Free heap: %d\n", ESP.getFreeHeap() );
+        SendDynamics();
 
         if (ESP.getFreeHeap() < 15000)
         {
@@ -181,6 +181,5 @@ void loop()
         Function_5MinuteProcessLoopFlag = false;
         Function_5MinProcessLoop();
         Network_5MinLoop();
-        SendDynamics();
     }
 }
