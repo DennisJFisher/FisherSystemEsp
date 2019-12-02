@@ -8,7 +8,7 @@ float PublishedLastAdc_V = 0;
 // Function_* below are called by the setup and main loops.
 void Function_Subscriptions()
 {
-        SendEmail = false;
+//        SendEmail = false;
 
     Subscribe(e_CabinKitchenTempMeas);
     Subscribe(e_CabinKitchenTempSet);
