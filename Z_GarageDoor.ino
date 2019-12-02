@@ -86,9 +86,10 @@ void SendFunctionInfo()
 {
     String Msg = "{\"FunctionTable\":\"";
     Msg += "Median Distance (in),"    + String(MedianLastDistance_in)              + ",";
-    Msg += "Last published distance," + String(PublishedDistance_in)                + ",";
+    Msg += "Last published distance," + String(PublishedDistance_in)               + ",";
     Msg += "Unpublished count,"       + String(UnpublishedCount)                   + ",";
     Msg += "Door state,"              + PreviousDoorStateString[PreviousDoorState] + "\"}";
+    Serial.printf("HERE is the exception!\n");
     WebSocket.broadcastTXT(Msg);
     Serial.println(Msg);
 }
