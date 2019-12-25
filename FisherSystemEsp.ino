@@ -39,13 +39,13 @@
 
 //#define  TEST
 //#define KITCHEN
-//#define GARAGE_UP
-#define GARAGE_DOOR
+#define GARAGE_UP
+//#define GARAGE_DOOR
 //#define CABIN_BASEMENT_NORTH
 //#define RIVER
 //#define HOTTUB
 
-const char FirmwareVersion[] = "0.52";
+const char FirmwareVersion[] = "0.53";
 
 // These 3 objects allow the device's process loop to periodically run.
 Ticker TickerProcessLoop;

@@ -72,7 +72,8 @@ void ProcessState()
 // Function_* below are called by the setup and main loops.
 void Function_Subscriptions()
 {
-    //  Subscribe(e_CabinGarageDoorCommand);
+    //Subscribe(e_CabinGarageDoorCommand);
+    //Subscribe(e_CabinGarageDownTempMeas);
 }
 
 void Function_Setup()
@@ -84,12 +85,14 @@ void Function_Setup()
 
 void SendFunctionInfo()
 {
+    int ft = MedianLastDistance_in / 12;
+    int in = MedianLastDistance_in % 12;
     String Msg = "{\"FunctionTable\":\"";
     Msg += "Median Distance (in),"    + String(MedianLastDistance_in)              + ",";
+    Msg += "Median Distance (ft:in)," + String(ft) + ":" + String(in)              + ",";
     Msg += "Last published distance," + String(PublishedDistance_in)               + ",";
     Msg += "Unpublished count,"       + String(UnpublishedCount)                   + ",";
     Msg += "Door state,"              + PreviousDoorStateString[PreviousDoorState] + "\"}";
-    Serial.printf("HERE is the exception!\n");
     WebSocket.broadcastTXT(Msg);
     Serial.println(Msg);
 }
@@ -100,7 +103,6 @@ void Function_5MinProcessLoop()
     Publish(DeviceConfiguration.Topics.Distance, PublishedDistance_in);
     Publish(e_CabinGarageDoorState, PreviousDoorState);
     
-    // TODO fix this...
     SendFunctionInfo();
 }
 
@@ -130,8 +132,6 @@ void Function_ProcessLoop()
                 SetRelay1(true);
                 delay(250);
                 SetRelay1(false);
-                // Clear out the distance filter
-                ResetDistanceFilter();
                 // Yield for 20 seconds to give the door time to change
                 unsigned long StartTime_ms = millis();
                 while (StartTime_ms + 20000 < millis())
@@ -155,6 +155,10 @@ void Function_ReceivedTopic(Topic_t Subtopic, String Value)
     {
         case e_CabinGarageDoorCommand:
             CabinGarageDoorRequest = (DoorState_t)Value.toInt();
+            break;
+        case e_CabinGarageDownTempMeas:
+            // Value received is F, convert to C.
+            DistanceTemp_C = (Value.toFloat() - 32) * 5 / 9;
             break;
         default:
             break;

@@ -1,5 +1,5 @@
 #include <ESP8266WiFi.h>
-#include <ESP8266mDNS.h>        // Include the mDNS library
+//#include <ESP8266mDNS.h>        // Include the mDNS library
 #include "HTML.h"
 
 inline bool WifiConnected()
@@ -185,10 +185,10 @@ void SendDynamics()
     
     Json += '}';    
 
-    WebSocket.broadcastTXT(Json);    
+    WebSocket.broadcastTXT(Json);
 }
 void SendDynamic(String Key, String Value)
-{
+{    
     WebSocket.broadcastTXT("{" + Key + ":" + Value + "}");    
 }
 
@@ -512,13 +512,13 @@ void Services_Setup()
 {
     Ota_Setup();
     NTP_Setup();
-    if (!MDNS.begin(DeviceConfiguration.ClientName.c_str())) {             // Start the mDNS responder for esp8266.local
-       Serial.println("Error setting up MDNS responder!");
-    }
-    else
-    {
-        Serial.println("MDNS responder running");
-    }
+//    if (!MDNS.begin(DeviceConfiguration.ClientName.c_str())) {             // Start the mDNS responder for esp8266.local
+//       Serial.println("Error setting up MDNS responder!");
+//    }
+//    else
+//    {
+//        Serial.println("MDNS responder running");
+//    }
     WebServer_Setup();
     MQTT_Setup();
 //    Email_Setup();

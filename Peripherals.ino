@@ -3,6 +3,7 @@
 #include <DallasTemperature.h>
 #include <DHT.h>
 #include <DHT_U.h>
+#include <NewPing.h>
 
 extern String DebugString;
 
@@ -63,6 +64,10 @@ bool  LastIndicationRed       = false;
 bool  LastIndicationGrn       = false;
 bool  LastRelay1              = false;
 bool  LastRelay2              = false;
+
+// Used for distance measurement. Filled by user.
+float DistanceTemp_C = -99;
+NewPing sonar(Trig_Pin, Echo_Pin);
 
 // Global sensor objects
 OneWire DS1OneWire(DS1_Pin);
@@ -184,31 +189,37 @@ void GetADC()
         Serial.println("ADC = " + String(Reading) + ", Volt = " + LastAdc_V);
     }
 }
+#if 0
 long microsecondsToInches(float Temp_C, long Time_us)
 {
+    Serial.printf("Temp being used for distance is %f C\n", Temp_C);
     if ((Temp_C < -40) || (Temp_C > 40) || (isnan(Temp_C)))
     {
-        Serial.println("TEMP IS NOT SET FOR DISTANCE!!!!!!!!!!!");
+        Serial.printf("TEMP IS NOT SET FOR DISTANCE, using 24 C\n");
         Temp_C = 24; // Assume room temp
     }
-    //return Time_us * (331.3+0.606*Temp_C) / 50800;
-
+  
     // speed of sound is effected by temp and humidity. Assume 50% humidity.
     // us for half the round trip * s/us * m/s * in/m
     //return (Time_us / 2) * 1/1000000 * (331.4 + 0.606*Temp_C + (0.0124 * 50)) * 39.3701;
-    double x = (Time_us * (331.4 + 0.606 * Temp_C + 0.62) * 0.000019685050); // Last val is 39.3701/1000000/2
+//    const double val = 39.3701 / 1000000;
+    double x = (Time_us / 2.0) / 1000000 * (331.3 + 0.606 * Temp_C + 0.62) * 39.3701;
     return x / 2;// HACK for some reason the measurement seems 2x.
 }
 const int MaxPulseEventSize = 20;
 long PulseEvent[MaxPulseEventSize] = {0};
-int PulseEvents = 0;
-void ResetDistanceFilter()
-{
-    PulseEvents = 0;
-}
+#endif
 long GetDistance(float Temp_C)
 {
+    // Using this library corrects the weird pulseIn error of 100% and makes the value more stable.
+    // Not using temp induces 6% error at 0C but not worth effort to correct for it.
+    long echoTime = sonar.ping_median(10, 450); // Do multiple pings (10) max distance roughly 15 feet -> cm.
+//    Serial.printf("TIME = %ld\n", echoTime);
+    MedianLastDistance_in = sonar.convert_in(echoTime);
+    return MedianLastDistance_in;
+#if 0
     MedianLastDistance_in = 0;
+    int ValidReadings = 0;
     if (e_None != DeviceConfiguration.Topics.Distance)
     {
         // Fill the array with raw pulse measurements.
@@ -219,24 +230,33 @@ long GetDistance(float Temp_C)
             digitalWrite(Trig_Pin, LOW);
             delayMicroseconds(2);
             digitalWrite(Trig_Pin, HIGH);
-            delayMicroseconds(5);
+            delayMicroseconds(10);
             digitalWrite(Trig_Pin, LOW);
     
             // a HIGH pulse whose duration is the time (in microseconds) from the sending
             // of the ping to the reception of its echo off of an object.
             long PulseWidth_us = pulseIn(Echo_Pin, HIGH);
 
-            PulseEvent[PulseEvents] = PulseWidth_us;
-            ++PulseEvents;
+            // Let the echos settle down for the next time... else the readings become bogus.
+            // Not sure what to use. examples show 50ms, that didn't work for large values. try the pulse width time?
+            delayMicroseconds(PulseWidth_us);
+
+            PulseEvent[ValidReadings] = PulseWidth_us;
+
+            // 0 indicates a bad reading, so just replace it with the last value.
+            if (PulseWidth_us > 0)
+            {
+                ++ValidReadings; // This can't ever exceed MaxPulseEventSize
+            }
         }
 
+        for (int i = 0; i < ValidReadings; ++i)        Serial.printf("    %2d = %2ld\n", i, PulseEvent[i]);
         // bubble Sort the events in place.
-        int numLength = PulseEvents; 
-        // TODO this could be shortened by 1 for each iteration.
-        for(int i = 1; i <= numLength; ++i)
+        for(int i = 0; i < ValidReadings; ++i)
         {
             bool Flag = 0;
-            for (int j=0; j < (numLength -1); j++)
+            // Only need to sort to 1 less than the total (since it looks ahead) and the last one sorted WILL be the largest so back off the loop by i.
+            for (int j=0; j < (ValidReadings - 1) - i; j++)
             {
                 if (PulseEvent[j+1] > PulseEvent[j])      // ascending order simply changes to <
                 { 
@@ -257,6 +277,7 @@ long GetDistance(float Temp_C)
     }
 
     return MedianLastDistance_in;
+#endif
 }
 
 void Peripherals_Setup()
@@ -290,7 +311,7 @@ void Peripherals_Loop()
     GetDHT();
     GetADC();
     // This temp will be used for the next distance measurement.
-    GetDistance(LastDHTTemp_C);
+    GetDistance(DistanceTemp_C);
 
     // If we are using a DHT, wait, otherwise the DS1 gets angry due to the shared pin.
     if (e_None != DeviceConfiguration.Topics.DHTTemp)
