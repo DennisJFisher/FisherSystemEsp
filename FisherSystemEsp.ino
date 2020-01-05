@@ -37,15 +37,35 @@
 */
 //#define DISABLE_PUBLISHING
 
-//#define  TEST
+#define  TEST
 //#define KITCHEN
-#define GARAGE_UP
+//#define GARAGE_UP
 //#define GARAGE_DOOR
 //#define CABIN_BASEMENT_NORTH
 //#define RIVER
 //#define HOTTUB
 
-const char FirmwareVersion[] = "0.53";
+const char FirmwareVersion[] = "0.54";
+
+uint32_t LastStackSize = 0;
+uint32_t SmallestStackSize = 0x7FFFFFF; // make big.
+uint32_t LargestStackSize = 0;
+uint32_t LastHeapSize = 0;
+uint32_t SmallestHeapSize  = 0x7FFFFFF; // Make it big.
+uint32_t LargestHeapSize   = 0;
+void StackHeapCheck()
+{
+    LastStackSize = ESP.getFreeContStack();
+    if (SmallestStackSize > LastStackSize) SmallestStackSize = LastStackSize;
+    if (LargestStackSize  < LastStackSize) LargestStackSize  = LastStackSize;
+
+    uint32_t free;
+    uint16_t max;
+    uint8_t frag;
+    ESP.getHeapStats(&free, &max, &frag);
+    if (SmallestHeapSize > free) SmallestHeapSize = free;
+    if (LargestHeapSize  < free) LargestHeapSize  = free;
+}
 
 // These 3 objects allow the device's process loop to periodically run.
 Ticker TickerProcessLoop;
@@ -119,6 +139,8 @@ void setup()
     Serial.begin(115200);
     //  Serial.setDebugOutput(true);// Allow wifi debug output
 
+    StackHeapCheck(); // Initialize the stuff.
+
     system_update_cpu_freq(160);
 
     //wifi_set_sleep_type(NONE_SLEEP_T);// TODO might not be needed?
@@ -143,6 +165,7 @@ void setup()
 bool RunOnceProcessLoop = true;
 void loop()
 {
+    StackHeapCheck();
     SystemTimeTrack();
 
 #ifndef RIVER

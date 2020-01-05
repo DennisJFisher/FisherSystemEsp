@@ -211,6 +211,8 @@ long PulseEvent[MaxPulseEventSize] = {0};
 #endif
 long GetDistance(float Temp_C)
 {
+    (void)Temp_C;// fix compiler warning.
+    
     // Using this library corrects the weird pulseIn error of 100% and makes the value more stable.
     // Not using temp induces 6% error at 0C but not worth effort to correct for it.
     long echoTime = sonar.ping_median(10, 450); // Do multiple pings (10) max distance roughly 15 feet -> cm.
