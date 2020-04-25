@@ -428,6 +428,8 @@ void ProcessReceivedTopic(char* Topic, byte* Payload, unsigned int Length)
         case e_CabinGarageUpTempSet:
         case e_CabinGarageDownTempMeas:
         case e_CabinKitchenTempMeas:
+        case e_CabinPowerEnabled:
+        case e_CabinGaragePowerEnabled:
             break;
         default:
             Serial.println("Unhandled topic:" + SubtopicString[Subtopic]);

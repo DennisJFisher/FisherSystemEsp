@@ -46,7 +46,7 @@
 //#define RIVER
 //#define HOTTUB
 
-const char FirmwareVersion[] = "0.55";
+const char FirmwareVersion[] = "0.56";
 
 uint32_t LastStackSize = 0;
 uint32_t MinStackSize  = 0x7FFF; // make big.

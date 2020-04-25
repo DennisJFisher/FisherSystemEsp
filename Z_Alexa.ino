@@ -27,7 +27,7 @@ void Function_Subscriptions()
 void Function_Setup()
 {
     DeviceConfiguration.ClientName            = "FS_Alexa";
-    DeviceConfiguration.ProcessLoopInterval_s = 60;
+    DeviceConfiguration.ProcessLoopInterval_s = 10;
     //DeviceConfiguration.SleepDelay_s        = 5;
 }
 
@@ -38,6 +38,8 @@ void SendFunctionInfo()
     {
         Msg += SubtopicString[TopicList[i]] + ","   + String(CurrentValues[i]) + ",";
     }
+    // Remove last comma.
+    Msg.remove(Msg.length()-1);
     Msg += "\"}";
     WebSocket.broadcastTXT(Msg);
     Serial.println(Msg);
@@ -57,6 +59,7 @@ void Function_RunOnceProcessLoop()
 // This loop executes after all measurements have been taken.
 void Function_ProcessLoop()
 {
+    SendFunctionInfo();
 }
 
 // Called whenever an MQTT topic is received.
@@ -65,13 +68,16 @@ void Function_ReceivedTopic(Topic_t Subtopic, String Value)
     // Go through the list of topics we care about.
     for (int i = 0; i < NumTopics; ++i)
     {
-        Serial.println("check " + String(Subtopic) + "=" + String(TopicList[i]));
+//        Serial.println("check " + String(Subtopic) + "=" + String(TopicList[i]));
         // If there's a match, save the value.
         if (Subtopic == TopicList[i])
         {
             CurrentValues[i] = Value;
         }
     }
+
+    // Update the table with the new value.
+    SendFunctionInfo();
 }
 
 // http://192.168.1.194/Alexa?Command=Get&Topic=%22Cabin/Garage/Up/Temp/Meas%22&Value=69
