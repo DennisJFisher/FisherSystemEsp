@@ -20,7 +20,7 @@ const char SITE_index[] PROGMEM = R"=====(
             var SDKVersion = document.getElementById('SDKVersion');
             var BootVersion = document.getElementById('BootVersion');
             var CPUFreq = document.getElementById('CPUFreq');
-            var FreeHeap = document.getElementById('FreeHeap');
+            var StackHeap = document.getElementById('StackHeap');
             var FirmwareVersion = document.getElementById('FirmwareVersion');
             var ResetReason = document.getElementById('ResetReason');
             var UpTime = document.getElementById('UpTime');
@@ -42,7 +42,7 @@ const char SITE_index[] PROGMEM = R"=====(
                 if (msg.BootVersion !== undefined) BootVersion.innerHTML = msg.BootVersion;
                 if (msg.FlashSize !== undefined) FlashSize.innerHTML = msg.FlashSize;
                 if (msg.CPUFreq !== undefined) CPUFreq.innerHTML = msg.CPUFreq;
-                if (msg.FreeHeap !== undefined) FreeHeap.innerHTML = msg.FreeHeap;
+                if (msg.StackHeap !== undefined) StackHeap.innerHTML = msg.StackHeap;
                 if (msg.FirmwareVersion !== undefined) FirmwareVersion.innerHTML = msg.FirmwareVersion;
                 if (msg.ResetReason !== undefined) ResetReason.innerHTML = msg.ResetReason;
                 if (msg.CurrentTimestamp !== undefined) CurrentTimestamp.innerHTML = msg.CurrentTimestamp;
@@ -73,6 +73,7 @@ const char SITE_index[] PROGMEM = R"=====(
                     for (var row = 0; row < rows; row++) {
                         var RowElement = document.createElement('TR');
                         InfoTable.appendChild(RowElement);
+                        var IsRaspi = false;
                         for (var col = 0; col < 6; col++) {
                             var CellElement = document.createElement('TD');
                             RowElement.appendChild(CellElement);
@@ -81,10 +82,25 @@ const char SITE_index[] PROGMEM = R"=====(
                             switch(col)
                             {
                                 case 0: // Turn into links.
-                                    str='<a href="http://' + str + '.local" target="_blank">' + str + '</a>';
+                                    IsRaspi = str.indexOf("Raspi") > -1;
+                                    if (IsRaspi)
+                                    {
+                                        str='<a href="http://' + str + '.local:1880/page" target="_blank">' + str + '</a>';
+                                    }
+                                    else
+                                    {
+                                        str='<a href="http://' + str + '.local" target="_blank">' + str + '</a>';
+                                    }
                                     break;
                                 case 1:
-                                    str='<a href="http://' + str  + '" target="_blank">' + str + "</a>";
+                                    if (IsRaspi)
+                                    {
+                                        str='<a href="http://' + str  + ':1880/page" target="_blank">' + str + "</a>";
+                                    }
+                                    else
+                                    {
+                                        str='<a href="http://' + str  + '" target="_blank">' + str + "</a>";
+                                    }
                                     break;
                                 case 4: // up time convert from min to dhm
                                     var minutes = parseInt(str);
@@ -184,8 +200,8 @@ const char SITE_index[] PROGMEM = R"=====(
                     <li>Last reset info:
                         <span id="ResetReason"></span>
                     </li>
-                    <li>Free heap:
-                        <span id="FreeHeap"></span>
+                    <li>Stack Heap Frag (min:now:max):
+                        <span id="StackHeap"></span>
                     </li>
                     <li>Up time:
                         <span id="UpTime"></span>
