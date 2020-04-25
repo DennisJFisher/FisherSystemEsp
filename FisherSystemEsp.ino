@@ -38,6 +38,7 @@
 //#define DISABLE_PUBLISHING
 
 #define  TEST
+//#define ALEXA
 //#define KITCHEN
 //#define GARAGE_UP
 //#define GARAGE_DOOR
@@ -45,7 +46,7 @@
 //#define RIVER
 //#define HOTTUB
 
-const char FirmwareVersion[] = "0.54";
+const char FirmwareVersion[] = "0.55";
 
 uint32_t LastStackSize = 0;
 uint32_t SmallestStackSize = 0x7FFFFFF; // make big.

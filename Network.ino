@@ -35,6 +35,8 @@ IPAddress StaticIP  (192, 168, 1, 187);
 IPAddress StaticIP  (192, 168, 1, 189);
 #elif defined HOTTUB
 IPAddress StaticIP  (192, 168, 1, 193);
+#elif defined ALEXA
+IPAddress StaticIP  (192, 168, 1, 194);
 #else
 ERROR... not defined!!!
 #endif
@@ -336,7 +338,16 @@ void HandlerNotFound()
     // Respond to the request.
     HttpServer.sendHeader("Connection", "close");
     HttpServer.sendHeader("Access-Control-Allow-Origin", "*");
-    HttpServer.send(200, "text/plain", "No handler found for this action");
+    message = "No handler found for this action\nArguments:\n";
+    for ( uint8_t i = 0; i < HttpServer.args(); i++ ) {
+        message += " " + HttpServer.argName ( i ) + ": " + HttpServer.arg ( i ) + "\n";
+    }
+    HttpServer.send(200, "text/plain", message.c_str());
+        
+    for ( uint8_t i = 0; i < HttpServer.args(); i++ ) {
+        HttpServer.send(200, "text/plain", HttpServer.argName ( i ) + ": " + HttpServer.arg ( i ));
+    }
+
 }
 
 void WebSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length) 
@@ -404,6 +415,9 @@ void WebServer_Setup()
     HttpServer.on("/temp_set", HTTP_POST, UpdateTempSet);
     HttpServer.on("/reboot", HTTP_POST, myReboot);
     HttpServer.on("/favicon.ico", HTTP_GET, SendFavicon);
+#if defined ALEXA
+    HttpServer.on("/Alexa", HTTP_GET, AlexaParser);
+#endif
     HttpServer.onFileUpload(UpdateSent);
     HttpServer.begin();
 
