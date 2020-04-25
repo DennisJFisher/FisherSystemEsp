@@ -3,10 +3,14 @@
 // Code for this specific function here, called by one of the functions interfaces below.
 float PreviousTemp_F   = -99;
 float PreviousHumidity = -99;
+int   KitchenTempSet_F = -99;
+String KitchenHeatOn = "";
 
 // Function_* below are called by the setup and main loops.
 void Function_Subscriptions()
 {
+    Subscribe(e_CabinKitchenTempSet);
+    Subscribe(e_CabinKitchenHeatOn);
 }
 
 void Function_Setup()
@@ -20,8 +24,10 @@ void Function_Setup()
 void SendFunctionInfo()
 {
     String Msg = "{\"FunctionTable\":\"";
-    Msg += "Kitchen temp meas (F),"    + String(LastDHTTemp_F) + ",";
-    Msg += "Kitchen humidity meas (%)," + String(LastDHTHumidity) + "\"}";
+    Msg += "Kitchen temp meas (F),"     + String(LastDHTTemp_F)    + ",";
+    Msg += "Kitchen humidity meas (%)," + String(LastDHTHumidity)  + ",";
+    Msg += "Kitchen temp Set(F),"       + String(KitchenTempSet_F) + ",";
+    Msg += "Kitchen heat on,"           + String(KitchenHeatOn)    + "\"}";
     WebSocket.broadcastTXT(Msg);
     Serial.println(Msg);
 }
@@ -77,6 +83,12 @@ void Function_ReceivedTopic(Topic_t Subtopic, String Value)
 {
     switch (Subtopic)
     {
+        case e_CabinKitchenTempSet:
+            KitchenTempSet_F = Value.toInt();
+            break;
+        case e_CabinKitchenHeatOn:
+            KitchenHeatOn = Value;
+            break;
         default:
             (void)Value;
             break;
