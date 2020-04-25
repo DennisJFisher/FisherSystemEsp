@@ -37,7 +37,7 @@
 */
 //#define DISABLE_PUBLISHING
 
-#define  TEST
+//#define  TEST
 //#define ALEXA
 //#define KITCHEN
 //#define GARAGE_UP
@@ -49,23 +49,31 @@
 const char FirmwareVersion[] = "0.55";
 
 uint32_t LastStackSize = 0;
-uint32_t SmallestStackSize = 0x7FFFFFF; // make big.
-uint32_t LargestStackSize = 0;
+uint32_t MinStackSize  = 0x7FFF; // make big.
+uint32_t MaxStackSize  = 0;
 uint32_t LastHeapSize = 0;
-uint32_t SmallestHeapSize  = 0x7FFFFFF; // Make it big.
-uint32_t LargestHeapSize   = 0;
+uint32_t MinHeapSize  = 0x7FFF; // Make big.
+uint32_t MaxHeapSize  = 0;
+uint8_t LastFragSize = 0;
 void StackHeapCheck()
 {
     LastStackSize = ESP.getFreeContStack();
-    if (SmallestStackSize > LastStackSize) SmallestStackSize = LastStackSize;
-    if (LargestStackSize  < LastStackSize) LargestStackSize  = LastStackSize;
+    if (MinStackSize > LastStackSize) MinStackSize = LastStackSize;
+    if (MaxStackSize < LastStackSize) MaxStackSize = LastStackSize;
 
-    uint32_t free;
     uint16_t max;
-    uint8_t frag;
-    ESP.getHeapStats(&free, &max, &frag);
-    if (SmallestHeapSize > free) SmallestHeapSize = free;
-    if (LargestHeapSize  < free) LargestHeapSize  = free;
+    ESP.getHeapStats(&LastHeapSize, &max, &LastFragSize);
+    if (MinHeapSize > LastHeapSize) MinHeapSize = LastHeapSize;
+    if (MaxHeapSize < LastHeapSize) MaxHeapSize = LastHeapSize;
+}
+String GetStackHeapString()
+{
+    String str;
+    str += " Stack = " + String(MinStackSize) + ":" + String(LastStackSize) + ":"  + String(MaxStackSize);
+    str += " Heap = "  + String(MinHeapSize)  + ":" + String(LastHeapSize)  + ":"  + String(MaxHeapSize);
+    str += " Frag = "  + String(LastFragSize) + "%";
+
+    return str;
 }
 
 // These 3 objects allow the device's process loop to periodically run.
