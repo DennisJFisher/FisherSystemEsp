@@ -178,7 +178,7 @@ void SendDynamics()
     {
         Json += "\"DebugString\":\"" + DebugString + "\",";
     }
-    Json += "\"FreeHeap\":\""         + String(ESP.getFreeHeap())  + "\",";
+    Json += "\"StackHeap\":\""        + GetStackHeapString()  + "\",";
     Json += "\"UpTimeMinutes\":\""    + String(GetUpTimeMinutes()) + "\",";
     Json += "\"CurrentTimestamp\":\"" + String(CurrentTime_s(0))   + "\",";
     Json += "\"Ssid\":\""             + String(WiFi.SSID())        + "\",";
@@ -203,13 +203,21 @@ void SendInfoTable()
     
     String Msg = "{\"InfoTable\":\"";
     int i;
-    for (i = 0; i < InfoTableSize-1; ++i)
+    for (i = 0; i < InfoTableSize; ++i)
     {
         String MinutesBack   = String((CurrentTime_s(0) - InfoTable[i].TS.toInt()) / 60);
-        Msg += InfoTable[i].Name + "," + InfoTable[i].IP + "," +InfoTable[i].RSSI + "," +InfoTable[i].FW + "," +InfoTable[i].UT + "," +MinutesBack + ",";
+        Msg += InfoTable[i].Name + "," + InfoTable[i].IP + "," +InfoTable[i].RSSI + "," +InfoTable[i].FW + "," +InfoTable[i].UT + "," +MinutesBack;
+        // See if we need to terminate the table or not.
+        if ((InfoTableSize-1) == i)
+        {
+            Msg += "\"}";
+        }
+        else
+        {
+            Msg += ",";
+        }
     }
-    String MinutesBack   = String((CurrentTime_s(0) - InfoTable[i].TS.toInt()) / 60);
-    Msg += InfoTable[i].Name + "," + InfoTable[i].IP + "," +InfoTable[i].RSSI + "," +InfoTable[i].FW + "," +InfoTable[i].UT + "," +MinutesBack + "\"}";
+
     WebSocket.broadcastTXT(Msg);
     Serial.println(Msg);
 }
