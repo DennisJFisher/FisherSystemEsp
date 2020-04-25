@@ -505,8 +505,8 @@ int ConnectToBestWifi(bool AlwaysDisconnect)
     {
         WiFi.config(StaticIP, Gateway, Subnet, DNS1, DNS2);
     }
-    WiFi.mode(WIFI_STA);
     WiFi.hostname(DeviceConfiguration.ClientName);
+    WiFi.mode(WIFI_STA);
     WiFi.begin(BestSsid.c_str(), WiFiPassword);
     Serial.printf("\nAttempting connection to %s\n", BestSsid.c_str());
 
