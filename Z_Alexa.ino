@@ -1,5 +1,16 @@
 #ifdef ALEXA
 
+#include <Wire.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_ADXL345_U.h>
+
+/* Assign a unique ID to this sensor at the same time */
+Adafruit_ADXL345_Unified accel = Adafruit_ADXL345_Unified(12345);
+double LastXAccel = 0.0;
+double LastYAccel = 0.0;
+double LastZAccel = 0.0;
+int SprinklerValue = 0;
+
 Topic_t TopicList[]
 {
     e_CabinPowerEnabled,
@@ -10,16 +21,44 @@ Topic_t TopicList[]
     e_CabinBasementTempMeas,
     e_CabinKitchenTempMeas,
     e_CabinGarageUpTempMeas,
+    e_Sprinkler,
 };
 const int NumTopics = sizeof(TopicList)/sizeof(Topic_t);
-String CurrentValues[NumTopics];
+String CurrentPayloadValues[NumTopics];
 
+void GetAccelerations()
+{
+  sensors_event_t event;
+  accel.getEvent(&event);
+  static int OldValue = 0;
+  int DiceValue = 0;
+//  sensor_t sensor;
+//  accel.getSensor(&sensor);
+
+  LastXAccel = event.acceleration.x;
+  LastYAccel = event.acceleration.y;
+  LastZAccel = event.acceleration.z;
+  if (LastXAccel > +5) DiceValue = 1;
+  if (LastXAccel < -5) DiceValue = 6;
+  if (LastYAccel > +5) DiceValue = 2;
+  if (LastYAccel < -5) DiceValue = 5;
+  if (LastZAccel > +5) DiceValue = 3;
+  if (LastZAccel < -5) DiceValue = 4;
+
+  Serial.printf("Dice = %d\n", DiceValue);
+  if (OldValue != DiceValue)
+  {
+    Serial.println("Publishing...");
+    Publish(e_Sprinkler, DiceValue);
+    OldValue = DiceValue;
+  }
+}
 // Function_* below are called by the setup and main loops.
 void Function_Subscriptions()
 {
     for (int i = 0; i < NumTopics; ++i)
     {
-        CurrentValues[i] = "Unknown";
+        CurrentPayloadValues[i] = "Unknown";
         Subscribe(TopicList[i]);
     }
 }
@@ -27,8 +66,10 @@ void Function_Subscriptions()
 void Function_Setup()
 {
     DeviceConfiguration.ClientName            = "FS_Alexa";
-    DeviceConfiguration.ProcessLoopInterval_s = 10;
+    DeviceConfiguration.ProcessLoopInterval_s = 2;
     //DeviceConfiguration.SleepDelay_s        = 5;
+
+    accel.begin();
 }
 
 void SendFunctionInfo()
@@ -36,8 +77,11 @@ void SendFunctionInfo()
     String Msg = "{\"FunctionTable\":\"";
     for (int i = 0; i < NumTopics; ++i)
     {
-        Msg += SubtopicString[TopicList[i]] + ","   + String(CurrentValues[i]) + ",";
+        Msg += SubtopicString[TopicList[i]] + ","   + String(CurrentPayloadValues[i]) + ",";
     }
+//    String Acc = "Dice,0,";
+//    Acc[5] += DiceValue;
+//    Msg += Acc;
     // Remove last comma.
     Msg.remove(Msg.length()-1);
     Msg += "\"}";
@@ -59,6 +103,7 @@ void Function_RunOnceProcessLoop()
 // This loop executes after all measurements have been taken.
 void Function_ProcessLoop()
 {
+    GetAccelerations();
     SendFunctionInfo();
 }
 
@@ -72,7 +117,7 @@ void Function_ReceivedTopic(Topic_t Subtopic, String Value)
         // If there's a match, save the value.
         if (Subtopic == TopicList[i])
         {
-            CurrentValues[i] = Value;
+            CurrentPayloadValues[i] = Value;
         }
     }
 
@@ -151,7 +196,7 @@ void AlexaParser()
         }
     }
 
-    // Alexa has requested getting a value.
+    // Alexa has a valid set or get request.
     if (!Fault)
     {
         // Assume we won't find the topic.
@@ -163,11 +208,11 @@ void AlexaParser()
             if (SubtopicString[Topic].equals(TopicStr))
             {
                 Serial.println("Alexa " + Command + " of " + SubtopicString[Topic]);
-                message += "Alexa " + Command + " of " + SubtopicString[Topic] + " 0=" + CurrentValues[0] + " 1=" + CurrentValues[1] + "\n";
+                message += "Alexa " + Command + " of " + SubtopicString[Topic] + " 0=" + CurrentPayloadValues[0] + " 1=" + CurrentPayloadValues[1] + "\n";
                 if (Command.equals("Get"))
                 {
-                    //message += CurrentValues[i];
-                    message = CurrentValues[i];
+                    //message += CurrentPayloadValues[i];
+                    message = CurrentPayloadValues[i];
                     Fault = false;
                 }
                 else

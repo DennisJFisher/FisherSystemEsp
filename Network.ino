@@ -355,7 +355,6 @@ void HandlerNotFound()
     for ( uint8_t i = 0; i < HttpServer.args(); i++ ) {
         HttpServer.send(200, "text/plain", HttpServer.argName ( i ) + ": " + HttpServer.arg ( i ));
     }
-
 }
 
 void WebSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length) 
