@@ -48,9 +48,13 @@ void GetAccelerations()
   Serial.printf("Dice = %d\n", DiceValue);
   if (OldValue != DiceValue)
   {
-    Serial.println("Publishing...");
-    Publish(e_Sprinkler, DiceValue);
-    OldValue = DiceValue;
+    // Only publish if the time stamp has been found.
+    if (CurrentTime_s(0) > 10000)
+    {
+      Serial.println("Publishing...");
+      Publish(e_Sprinkler, DiceValue);
+      OldValue = DiceValue;
+    }
   }
 }
 // Function_* below are called by the setup and main loops.
@@ -205,6 +209,7 @@ void AlexaParser()
         {
             Topic_t Topic = TopicList[i];
             message += " sub=" + String(i) + "=" + SubtopicString[Topic] + "=" + TopicStr + "\n";
+            Serial.printf("%d -%s- == -%s-\n", Topic, SubtopicString[Topic].c_str(), TopicStr.c_str());
             if (SubtopicString[Topic].equals(TopicStr))
             {
                 Serial.println("Alexa " + Command + " of " + SubtopicString[Topic]);
