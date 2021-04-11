@@ -1,5 +1,9 @@
+#ifdef ESP8266 
 #include <ESP8266WiFi.h>
 //#include <ESP8266mDNS.h>        // Include the mDNS library
+#else
+#include "WiFi.h"
+#endif
 #include "HTML.h"
 
 inline bool WifiConnected()
@@ -144,10 +148,12 @@ void Ota_Loop(void)
 ///////////////////////////////////////////////////////
 // Webserver (and WebSocket)
 ///////////////////////////////////////////////////////
+#ifdef ESP8266 
 #include <ESP8266WebServer.h>
+ESP8266WebServer HttpServer(80);
+#endif
 #include <WiFiUdp.h>
 
-ESP8266WebServer HttpServer(80);
 WebSocketsServer WebSocket = WebSocketsServer(81);    // create a websocket server on port 81
 
 String DebugString;

@@ -1,4 +1,6 @@
+#ifdef ESP8266 
 #include "cont.h"
+#endif
 
 const long EEPROM_Key = 0x55AA;
 typedef enum

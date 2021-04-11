@@ -92,11 +92,13 @@ void Run5MinuteProcessLoopCB()
     Function_5MinuteProcessLoopFlag = true;
 }
 
-// Needed for light sleep and adc
+// Needed for light sleep and adc on 8266
+#ifdef ESP8266 
 extern "C"
 {
 #include "user_interface.h"
 }
+#endif
 
 void Sleep_s(uint32_t Seconds)
 {
