@@ -37,9 +37,9 @@
 */
 //#define DISABLE_PUBLISHING
 
-//#define  TEST
+//#define TEST
 //#define ALEXA
-//#define KITCHEN
+#define KITCHEN
 //#define GARAGE_UP
 //#define GARAGE_DOOR
 //#define CABIN_BASEMENT_NORTH
@@ -61,7 +61,7 @@ void StackHeapCheck()
     if (MinStackSize > LastStackSize) MinStackSize = LastStackSize;
     if (MaxStackSize < LastStackSize) MaxStackSize = LastStackSize;
 
-    uint16_t max;
+    uint32_t max;
     ESP.getHeapStats(&LastHeapSize, &max, &LastFragSize);
     if (MinHeapSize > LastHeapSize) MinHeapSize = LastHeapSize;
     if (MaxHeapSize < LastHeapSize) MaxHeapSize = LastHeapSize;

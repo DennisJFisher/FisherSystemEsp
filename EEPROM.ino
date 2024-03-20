@@ -24,8 +24,10 @@ void EEPROMWrite(uint8_t Addr, uint32_t Value, uint8_t Size)
     case 4:
       EEPROM.write(Addr++, Value >> 24);
       EEPROM.write(Addr++, Value >> 16);
+      __attribute__ ((fallthrough));
     case 2:
       EEPROM.write(Addr++, Value >> 8);
+      __attribute__ ((fallthrough));
     case 1:
       EEPROM.write(Addr++, Value >> 0);
       break;
@@ -45,8 +47,10 @@ uint32_t EEPROMRead(uint16_t Addr, uint8_t Size)
     case 4:
       Val += EEPROM.read(Addr++) << 24;
       Val += EEPROM.read(Addr++) << 16;
+      __attribute__ ((fallthrough));
     case 2:
       Val += EEPROM.read(Addr++) << 8;
+      __attribute__ ((fallthrough));
     case 1:
       Val += EEPROM.read(Addr) << 0;
       break;

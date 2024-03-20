@@ -197,7 +197,8 @@ void SendDynamics()
 }
 void SendDynamic(String Key, String Value)
 {    
-    WebSocket.broadcastTXT("{" + Key + ":" + Value + "}");    
+  String TotalStr = "{" + Key + ":" + Value + "}";
+    WebSocket.broadcastTXT(TotalStr);    
 }
 
 void SendInfoTable()
